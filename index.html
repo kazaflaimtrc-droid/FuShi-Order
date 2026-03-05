@@ -174,7 +174,7 @@
     /************ 你要改：後端 URL & 圖片 & WhatsApp ************/
     const MENU_API_URL = 'https://script.google.com/macros/s/AKfycby5S6EXkqphOxGxjX84TP7I1a2L5JJheyl7dnIJOLgvRA73QeVGtJ-LeMP26bWeCUioUg/exec';
     
-    // ⚠️ 請將下面呢條 URL 換成你啱啱發佈會員系統嘅 Web App URL ⚠️
+    // ⚠️ 會員系統嘅 Web App URL
     const MEMBER_API_URL = 'https://script.google.com/macros/s/AKfycbyYga2VZKO4A6k8QSAb_4piT9S-blSt7Kk8KFMeaVUlMFcsPpg1ynNLmK_gG58_JA0E/exec'; 
 
     const LOGO_SRC = 'https://deckchairs.co.uk/cdn/shop/files/Fabric_PCEG_2022-1-scaled.jpg?v=1712753622';
@@ -189,7 +189,7 @@
       zh: {
         title: '福食小助手',
         sub: '即問即答 · 訂位 · 到會 · 外賣',
-        placeholder: '請直接輸入你的問題，例如：訂位、外賣、印花…',
+        placeholder: '請直接輸入你的問題，例如：訂位、外賣、優惠、印花…',
         btnSend: '送出',
         welcome: ['哈囉～ 歡迎嚟到「福食」！', '你可以撳下面快捷鍵，或者直接打字問我。'],
         askMeat: '今日想食咩？例如：牛、雞、豬、海鮮、素食。',
@@ -202,7 +202,7 @@
         catIntro: '到會／大量訂購：請先簡單填寫以下資料，我哋會經 WhatsApp 同你跟進；你亦可以先睇到會餐牌同填到會訂購表格。',
         sent: '已開啟 WhatsApp，我哋會盡快回覆你確認。',
         
-        // 新增會員相關文字
+        // 會員相關文字
         memberIntro: '想儲印花換優惠？請輸入電郵登記成為會員，或者查詢現有印花！（買10次送1次🎁）',
         memEmpty: '請輸入有效嘅電郵地址。',
         memRegSuccess: '🎉 登記成功！你而家有 0 個印花。下次幫襯記得話俾我哋知你個電郵！',
@@ -218,6 +218,7 @@
           { label:'📅 訂位', text:'幫我訂位' },
           { label:'📦 到會', text:'到會／大量訂購' },
           { label:'🥡 外賣', text:'外賣／自取' },
+          { label:'🧧 優惠', text:'有冇優惠' },    // 加入優惠快捷鍵
           { label:'🎁 會員印花', text:'會員印花' }
         ],
         langBtn: 'EN'
@@ -225,7 +226,7 @@
       en: {
         title: 'FuShi Food Assistant',
         sub: 'Ask · Booking · Catering · Takeaway',
-        placeholder: 'Type your question: menu, booking, catering, stamps…',
+        placeholder: 'Type your question: menu, booking, promo, stamps…',
         btnSend: 'Send',
         welcome: ['Hi! Welcome to "FuShi".', 'Use the hot keys below or type your question.'],
         askMeat: 'Any preference today? Beef / Chicken / Pork / Seafood / Vegan.',
@@ -238,7 +239,7 @@
         catIntro: 'Catering / bulk order: please fill in the basic info below, we will follow up via WhatsApp. You can also check the catering menu and submit the online order form.',
         sent: 'WhatsApp opened. We will reply shortly to confirm.',
         
-        // 新增會員相關文字
+        // 會員相關文字
         memberIntro: 'Join our loyalty program! Enter your email to register or check stamps (Buy 10 get 1 free! 🎁)',
         memEmpty: 'Please enter a valid email address.',
         memRegSuccess: '🎉 Registration successful! You have 0 stamps. Remember to provide your email on your next visit!',
@@ -254,6 +255,7 @@
           { label:'📅 Booking', text:'book a table' },
           { label:'📦 Catering', text:'catering' },
           { label:'🥡 Takeaway', text:'takeaway' },
+          { label:'🧧 Promo', text:'promotion' },    // 加入優惠快捷鍵
           { label:'🎁 Loyalty Stamps', text:'member stamps' }
         ],
         langBtn: '中文'
@@ -404,13 +406,20 @@
       const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
       const meat = row.meat || row.Meat || row['肉類'] || '';
       const price = (row.price ?? row.Price ?? null);
+      
+      // 新增：讀取 Promotion 同 Promotion Price
+      const promo = row.Promotion || row.promotion || '';
+      const promoPrice = row['Promotion Price'] || row.promotion_price || row.promotionPrice || null;
 
       return {
         period: (period || 'All Day').toString().trim(),
         nameZh: (nameZh || '').toString().trim(),
         nameEn: (nameEn || '').toString().trim(),
         meat: (meat || '').toString().trim(),
-        price: (price === '' || price == null) ? null : Number(price)
+        price: (price === '' || price == null) ? null : Number(price),
+        // 判斷係咪優惠項目 (將 Yes 轉為 true)
+        isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
+        promoPrice: (promoPrice === '' || promoPrice == null) ? null : Number(promoPrice)
       };
     }
 
@@ -429,7 +438,7 @@
       }
     }
 
-    /************ recommendation / period helpers ************/
+    /************ recommendation / period / promo helpers ************/
     function chooseMeatTag(raw){
       const s = norm(raw);
       if (s.includes('牛') || s.includes('beef')) return 'Beef';
@@ -526,6 +535,60 @@
       addBotHTML(html);
 
       addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
+      addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
+    }
+
+    function listPromotions() {
+      const t = I18N[currentLang];
+
+      if (!menuData.length) {
+        addBot(t.menuFail);
+        addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
+        addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
+        return;
+      }
+
+      // 篩選出 Promotion = Yes 嘅項目
+      const list = menuData.filter(d => d.isPromo);
+
+      if (!list.length) {
+        if (currentLang === 'zh') {
+          addBot('暫時未有特別優惠，你可以開電子餐牌睇下其他菜式：');
+        } else {
+          addBot('There are no special promotions at the moment. You can check the e-menu for other dishes:');
+        }
+        addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
+        return;
+      }
+
+      if (currentLang === 'zh') {
+        addBot('✨ 而家做緊以下精選優惠：');
+      } else {
+        addBot('✨ Here are our current special promotions:');
+      }
+
+      const html = list.map(d => {
+        const name = (currentLang === 'zh') ? (d.nameZh || d.nameEn) : (d.nameEn || d.nameZh);
+        const alt  = (currentLang === 'zh')
+          ? (d.nameEn ? `（${d.nameEn}）` : '')
+          : (d.nameZh ? `(${d.nameZh})` : '');
+          
+        const oriPrice = (d.price == null || Number.isNaN(d.price)) ? '' : `HK$${d.price}`;
+        const newPrice = (d.promoPrice == null || Number.isNaN(d.promoPrice)) ? '' : `HK$${d.promoPrice}`;
+        
+        let priceText = '';
+        if(oriPrice && newPrice) {
+            priceText = ` - <del style="color:#888;">${oriPrice}</del> <strong><span style="color:#d32f2f;">${newPrice}</span></strong>`;
+        } else if (newPrice) {
+            priceText = ` - <strong><span style="color:#d32f2f;">${newPrice}</span></strong>`;
+        } else if (oriPrice) {
+            priceText = ` - ${oriPrice}`;
+        }
+
+        return `• ${name}${alt}${priceText}`;
+      }).join('<br>');
+
+      addBotHTML(html);
       addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
     }
 
@@ -734,9 +797,9 @@
         return;
       }
 
+      // 更新：呼叫 listPromotions()
       if (s.includes('優惠') || s.includes('promo') || s.includes('promotion') || s.includes('offer')) {
-        addBot(currentLang === 'zh' ? '最新優惠可以喺電子餐牌見到：' : 'Latest promotions are in the e-menu:');
-        addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
+        listPromotions();
         return;
       }
 
