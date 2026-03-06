@@ -399,28 +399,28 @@
     }
 
     /************ menu normalize ************/
-    function normalizeRow(row){
-      const period = row.period || row['Available Period'] || 'All Day';
-      const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
-      const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
-      const meat = row.meat || row.Meat || row['肉類'] || '';
-      const price = (row.price ?? row.Price ?? null);
-      
-      // 新增：讀取 Promotion 同 Promotion Price
-      const promo = row.Promotion || row.promotion || '';
-      const promoPrice = row['Promotion Price'] || row.promotion_price || row.promotionPrice || null;
+function normalizeRow(row){
+  const period = row.period || row['Available Period'] || 'All Day';
+  const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
+  const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
+  const meat = row.meat || row.Meat || row['肉類'] || '';
+  const price = (row.price ?? row.Price ?? null);
+  
+  // 讀取 Promotion 同 Promotion Price（細階 promotion 係 Apps Script 輸出）
+  const promo = row.promotion || row.Promotion || '';
+  const promoPrice = row.promotionPrice ?? row['Promotion Price'] ?? row.promotion_price ?? null;
 
-      return {
-        period: (period || 'All Day').toString().trim(),
-        nameZh: (nameZh || '').toString().trim(),
-        nameEn: (nameEn || '').toString().trim(),
-        meat: (meat || '').toString().trim(),
-        price: (price === '' || price == null) ? null : Number(price),
-        // 判斷係咪優惠項目 (將 Yes 轉為 true)
-        isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
-        promoPrice: (promoPrice === '' || promoPrice == null) ? null : Number(promoPrice)
-      };
-    }
+  return {
+    period: (period || 'All Day').toString().trim(),
+    nameZh: (nameZh || '').toString().trim(),
+    nameEn: (nameEn || '').toString().trim(),
+    meat: (meat || '').toString().trim(),
+    price: (price === '' || price == null) ? null : Number(price),
+    promotion: promo,  // 👈 保留原始 promotion 值，方便 filter + debug
+    isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
+    promoPrice: (promoPrice === '' || promoPrice == null) ? null : Number(promoPrice)
+  };
+}
 
     async function loadMenu(){
       const t = I18N[currentLang];
