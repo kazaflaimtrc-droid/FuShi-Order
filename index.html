@@ -390,32 +390,35 @@ function normalizeRow(row){
   const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
   const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
   
-  // 一定要有呢段！
-  const meatZh =
-    row.category ||       // 👈 API 回傳嘅 key
-    row['肉類'] ||
-    row.meat_zh ||
-    row.meatZh ||
-    row.meat ||
-    row.Meat ||
-    '';
+  // 準確讀取 JSON 嘅 category 或肉類
+  const meatZh = row.category || row['肉類'] || row.meat_zh || row.meatZh || '';
 
-  const price = (row.price ?? row.Price ?? null);
-  const promo = row.promotion || row.Promotion || '';
-  const promoPrice = row.promotionPrice ?? row['Promotion Price'] ?? row.promotion_price ?? null;
+  // 處理價錢：將可能嘅 $ 符號移走，轉做數字，如果係 null 就俾 null
+  let rawPrice = row.price ?? row.Price ?? null;
+  if (typeof rawPrice === 'string') rawPrice = rawPrice.replace('$', '').trim();
+  const price = (rawPrice === '' || rawPrice == null) ? null : Number(rawPrice);
+
+  // 處理 Promotion
+  const promo = row.promotion || row.Promotion || row['Promotion Item'] || '';
+  
+  // 處理 Promotion Price
+  let rawPromoPrice = row.promotionPrice ?? row['Promotion Price'] ?? row.promotion_price ?? null;
+  if (typeof rawPromoPrice === 'string') rawPromoPrice = rawPromoPrice.replace('$', '').trim();
+  const promoPrice = (rawPromoPrice === '' || rawPromoPrice == null) ? null : Number(rawPromoPrice);
 
   return {
     period: (period || 'All Day').toString().trim(),
     nameZh: (nameZh || '').toString().trim(),
     nameEn: (nameEn || '').toString().trim(),
-    meat: (meatZh || '').toString().trim(),   // 👈 將 meatZh 塞入 meat
-    price: (price === '' || price == null) ? null : Number(price),
+    meat: (meatZh || '').toString().trim(),
+    price: price,
     promotion: promo,
+    // 只要有 Yes 就當係優惠
     isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
-    promoPrice: (promoPrice === '' || promoPrice == null) ? null : Number(promoPrice)
+    promoPrice: promoPrice
   };
 }
-
+    
     async function loadMenu(){
       const t = I18N[currentLang];
       try{
