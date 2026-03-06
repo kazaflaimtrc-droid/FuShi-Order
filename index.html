@@ -180,12 +180,12 @@
     /************ i18n ************/
     const I18N = {
       zh: {
-        title: '福食小助手',
-        sub: '即問即答 · 訂位 · 到會 · 外賣',
+        title: '福食小幫手',
+        sub: '訂位 · 到會 · 外賣',
         placeholder: '請直接輸入你的問題，例如：訂位、外賣、優惠、飲品、印花…',
         btnSend: '送出',
         welcome: ['哈囉～ 歡迎嚟到「福食」！', '你可以撳下面快捷鍵，或者直接打字問我。'],
-        askMeat: '今日想食咩？例如：牛、雞、豬、海鮮、素食。',
+        askMeat: '今日想食咩？例如：牛、雞、豬、羊、鴨、海鮮、素食。',
         menuFail: '暫時未能載入最新菜單，你可以先睇電子餐牌：',
         picked: '我幫你揀咗幾款：',
         noMatch: '暫時未搵到符合條件嘅菜式，你可以開電子餐牌睇更多：',
@@ -207,8 +207,8 @@
           { label:'🍴 今日食咩好？', text:'今日食咩好？' },
           { label:'📅 訂位', text:'幫我訂位' },
           { label:'📦 到會', text:'到會／大量訂購' },
-          { label:'🥤 飲品', text:'飲品' },
-          { label:'🧧 優惠', text:'有冇優惠' },
+          { label:'🥤 飲品', text:'有咩飲' },
+          { label:'🧧 優惠', text:'優惠推介' },
           { label:'🎁 會員印花', text:'會員印花' }
         ],
         langBtn: 'EN'
@@ -219,7 +219,7 @@
         placeholder: 'Type your question: menu, drinks, booking, promo, stamps…',
         btnSend: 'Send',
         welcome: ['Hi! Welcome to "FuShi".', 'Use the hot keys below or type your question.'],
-        askMeat: 'Any preference today? Beef / Chicken / Pork / Seafood / Vegan.',
+        askMeat: 'Any preference today? Beef / Chicken / Pork / Seafood / Vegan / Lamb / Duck.',
         menuFail: 'Unable to load live menu. You can open the e-menu:',
         picked: 'Here are some picks:',
         noMatch: 'No matching dishes. You can open the e-menu:',
@@ -242,7 +242,7 @@
           { label:'📅 Booking', text:'book a table' },
           { label:'📦 Catering', text:'catering' },
           { label:'🥤 Drinks', text:'drinks' },
-          { label:'🧧 Promo', text:'promotion' },
+          { label:'🧧 Promo', text:'Today promotion' },
           { label:'🎁 Loyalty Stamps', text:'member stamps' }
         ],
         langBtn: '中文'
@@ -732,7 +732,7 @@
 
     memAddStampBtn.addEventListener('click', async () => {
       const pwd = prompt('請輸入店員密碼 (預設: 1234):');
-      if (pwd !== '1234') {
+      if (pwd !== '102030') {
         alert('密碼錯誤！');
         return;
       }
