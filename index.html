@@ -476,9 +476,24 @@ function normalizeRow(row){
         return;
       }
 
-      const list = menuData
-        .filter(d => norm(d.meat) === norm(meatTag))
-        .slice(0, 3);
+      // 攞目前應該係咩時段 (breakfast 或 lunch)
+      const currentPeriod = getMealPeriodByTime();
+
+      // 過濾條件：
+      // 1. 肉類要對得中 (meatTag)
+      // 2. 菜式時段 (d.period) 必須要吻合當前時段，或者係 All Day
+      const list = menuData.filter(d => {
+        const isMatchMeat = norm(d.meat) === norm(meatTag);
+        const itemPeriod = norm(d.period);
+        // 如果無寫period、寫住All Day、Drink，或者同現在時段吻合，就當可以食
+        const isMatchPeriod = !itemPeriod || 
+                              itemPeriod.includes('all') || 
+                              itemPeriod.includes('drink') || 
+                              itemPeriod.includes('snack') || 
+                              itemPeriod === currentPeriod;
+        
+        return isMatchMeat && isMatchPeriod;
+      }).slice(0, 3); // 隨機或順序抽3款
 
       if(!list.length){
         addBot(t.noMatch);
