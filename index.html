@@ -389,13 +389,15 @@ function normalizeRow(row){
   const period = row.period || row['Available Period'] || 'All Day';
   const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
   const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
-
-  // ✅ 以 API 回傳嘅 category 做中文肉類
+  
+  // 一定要有呢段！
   const meatZh =
-    row.category ||   // Apps Script 內用呢個 key
+    row.category ||       // 👈 API 回傳嘅 key
     row['肉類'] ||
     row.meat_zh ||
     row.meatZh ||
+    row.meat ||
+    row.Meat ||
     '';
 
   const price = (row.price ?? row.Price ?? null);
@@ -406,7 +408,7 @@ function normalizeRow(row){
     period: (period || 'All Day').toString().trim(),
     nameZh: (nameZh || '').toString().trim(),
     nameEn: (nameEn || '').toString().trim(),
-    meat: (meatZh || '').toString().trim(),   // 「牛／雞／豬／羊／鴨／海鮮／素食」
+    meat: (meatZh || '').toString().trim(),   // 👈 將 meatZh 塞入 meat
     price: (price === '' || price == null) ? null : Number(price),
     promotion: promo,
     isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
