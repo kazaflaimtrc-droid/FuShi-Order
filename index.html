@@ -764,6 +764,7 @@ function normalizeRow(row){
     });
 
     /************ main router ************/
+        /************ main router ************/
     function handleKeyword(raw){
       const t = I18N[currentLang];
       const s = norm(raw);
@@ -772,53 +773,64 @@ function normalizeRow(row){
       const meatTag = chooseMeatTag(raw);
       const periodKey = choosePeriod(raw);
 
+      // 1. 最優先處理「優惠」：只要有優惠字眼，即刻顯示 Promotion
+      if (s.includes('優惠') || s.includes('promo') || s.includes('promotion') || s.includes('offer')) {
+        listPromotions();
+        return;
+      }
+
+      // 2. 今日食咩 / 推介
+      // 注意：加咗 s.includes('推介')，但因為上面已經截咗「優惠推介」，所以唔會再撞
       if (s.includes('今日食咩') || s.includes('食咩好') || s.includes('有咩好食') || s.includes('推介') || s.includes('推薦') || s.includes('what to eat') || (s.includes('what') && s.includes('eat'))) {
         flowEat();
         if (meatTag) recommend(meatTag);
         return;
       }
 
+      // 3. 早餐 / 午餐
       if (periodKey) {
         listByPeriod(periodKey);
         return;
       }
 
+      // 4. 飲品
       if (s.includes('飲品') || s.includes('飲嘢') || (s.includes('飲') && s.includes('咩')) || s.includes('drink') || s.includes('drinks') || s.includes('beverage')) {
         listDrinks();
         return;
       }
 
+      // 5. 訂位
       if (s.includes('訂位') || s.includes('訂枱') || s.includes('book') || s.includes('reservation') || s.includes('reserve')) {
         flowReservation();
         return;
       }
 
+      // 6. 到會
       if (s.includes('到會') || s.includes('大量訂購') || s.includes('catering') || (s.includes('bulk') && s.includes('order'))) {
         flowCatering();
         return;
       }
       
+      // 7. 會員印花
       if (s.includes('會員') || s.includes('印花') || s.includes('登記') || s.includes('member') || s.includes('stamp') || s.includes('loyalty') || s.includes('register')) {
         flowMember();
         return;
       }
 
+      // 8. 外賣
       if (s.includes('外賣') || s.includes('自取') || s.includes('takeaway') || s.includes('pickup') || s.includes('delivery')) {
         addBot(currentLang === 'zh' ? '外賣／自取可以經呢個連結落單：' : 'Order takeaway / pickup here:');
         addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
         return;
       }
 
-      if (s.includes('優惠') || s.includes('promo') || s.includes('promotion') || s.includes('offer')) {
-        listPromotions();
-        return;
-      }
-
+      // 9. 如果只係單純打咗 牛/雞/豬 呢啲肉類
       if (meatTag){
         recommend(meatTag);
         return;
       }
 
+      // 10. 乜都唔中嘅提示
       addBot(currentLang === 'zh'
         ? '你可以試吓：今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／飲品／訂位／到會／外賣／優惠／會員印花'
         : 'Try: what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / drinks / booking / catering / takeaway / promotion / member stamps'
