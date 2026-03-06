@@ -314,7 +314,7 @@
     function getMealPeriodByTime() {
       const hour = new Date().getHours();
       if (hour < 11) return 'breakfast';
-      return 'lunch';   // 11:00 之後一律當 lunch（移除下午茶）
+      return 'lunch';   // 移除下午茶
     }
 
     /************ language ************/
@@ -384,12 +384,12 @@
       t.welcome.forEach(addBot);
     }
 
-    /************ menu normalize ************/
+    /************ menu normalize：用中文「肉類」欄 ************/
     function normalizeRow(row){
       const period = row.period || row['Available Period'] || 'All Day';
       const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
       const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
-      const meat = row.meat || row.Meat || row['肉類'] || '';
+      const meatZh = row['肉類'] || '';
       const price = (row.price ?? row.Price ?? null);
       const promo = row.promotion || row.Promotion || '';
       const promoPrice = row.promotionPrice ?? row['Promotion Price'] ?? row.promotion_price ?? null;
@@ -398,7 +398,7 @@
         period: (period || 'All Day').toString().trim(),
         nameZh: (nameZh || '').toString().trim(),
         nameEn: (nameEn || '').toString().trim(),
-        meat: (meat || '').toString().trim(),
+        meat: (meatZh || '').toString().trim(),   // 牛／雞／豬／羊／鴨／海鮮／素食
         price: (price === '' || price == null) ? null : Number(price),
         promotion: promo,
         isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
@@ -424,11 +424,13 @@
     /************ recommendation / period / promo helpers ************/
     function chooseMeatTag(raw){
       const s = norm(raw);
-      if (s.includes('牛') || s.includes('beef')) return 'Beef';
-      if (s.includes('雞') || s.includes('chicken')) return 'Chicken';
-      if (s.includes('豬') || s.includes('pork')) return 'Pork';
-      if (s.includes('海鮮') || s.includes('seafood') || s.includes('sea food')) return 'Sea Food';
-      if (s.includes('素') || s.includes('vegan') || s.includes('veg')) return 'Vegan';
+      if (s.includes('牛') || s.includes('beef')) return '牛';
+      if (s.includes('雞') || s.includes('chicken')) return '雞';
+      if (s.includes('豬') || s.includes('pork')) return '豬';
+      if (s.includes('羊') || s.includes('lamb')) return '羊';
+      if (s.includes('鴨') || s.includes('duck')) return '鴨';
+      if (s.includes('海鮮') || s.includes('seafood') || s.includes('sea food')) return '海鮮';
+      if (s.includes('素') || s.includes('vegan') || s.includes('veg')) return '素食';
       return null;
     }
 
@@ -438,7 +440,7 @@
         return 'breakfast';
       }
       if (s.includes('午') || s.includes('lunch') || s.includes('茶') || s.includes('下午茶') || s.includes('tea')) {
-        return 'lunch';    // 茶都歸入 lunch
+        return 'lunch';
       }
       return null;
     }
@@ -731,7 +733,7 @@
     });
 
     memAddStampBtn.addEventListener('click', async () => {
-      const pwd = prompt('請輸入店員密碼 (預設: 1234):');
+      const pwd = prompt('請輸入店員密碼 (預設: 102030):');
       if (pwd !== '102030') {
         alert('密碼錯誤！');
         return;
@@ -768,7 +770,7 @@
         return;
       }
 
-      if (s.includes('飲品') || s.includes('飲嘢') || s.includes('drink') || s.includes('drinks') || s.includes('beverage')) {
+      if (s.includes('飲品') || s.includes('飲嘢') || (s.includes('飲') && s.includes('咩')) || s.includes('drink') || s.includes('drinks') || s.includes('beverage')) {
         listDrinks();
         return;
       }
@@ -805,8 +807,8 @@
       }
 
       addBot(currentLang === 'zh'
-        ? '你可以試吓：今日食咩好？／早餐／午餐／飲品／幫我訂位／到會／外賣／優惠／會員印花'
-        : 'Try: what to eat / breakfast / lunch / drinks / booking / catering / takeaway / promotion / member stamps'
+        ? '你可以試吓：今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／飲品／訂位／到會／外賣／優惠／會員印花'
+        : 'Try: what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / drinks / booking / catering / takeaway / promotion / member stamps'
       );
     }
 
