@@ -385,26 +385,34 @@
     }
 
     /************ menu normalize：用中文「肉類」欄 ************/
-    function normalizeRow(row){
-      const period = row.period || row['Available Period'] || 'All Day';
-      const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
-      const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
-      const meatZh = row['肉類'] || '';
-      const price = (row.price ?? row.Price ?? null);
-      const promo = row.promotion || row.Promotion || '';
-      const promoPrice = row.promotionPrice ?? row['Promotion Price'] ?? row.promotion_price ?? null;
+function normalizeRow(row){
+  const period = row.period || row['Available Period'] || 'All Day';
+  const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
+  const nameEn = row.item_en || row['Item in english'] || row['Item in English'] || '';
 
-      return {
-        period: (period || 'All Day').toString().trim(),
-        nameZh: (nameZh || '').toString().trim(),
-        nameEn: (nameEn || '').toString().trim(),
-        meat: (meatZh || '').toString().trim(),   // 牛／雞／豬／羊／鴨／海鮮／素食
-        price: (price === '' || price == null) ? null : Number(price),
-        promotion: promo,
-        isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
-        promoPrice: (promoPrice === '' || promoPrice == null) ? null : Number(promoPrice)
-      };
-    }
+  // ✅ 以 API 回傳嘅 category 做中文肉類
+  const meatZh =
+    row.category ||   // Apps Script 內用呢個 key
+    row['肉類'] ||
+    row.meat_zh ||
+    row.meatZh ||
+    '';
+
+  const price = (row.price ?? row.Price ?? null);
+  const promo = row.promotion || row.Promotion || '';
+  const promoPrice = row.promotionPrice ?? row['Promotion Price'] ?? row.promotion_price ?? null;
+
+  return {
+    period: (period || 'All Day').toString().trim(),
+    nameZh: (nameZh || '').toString().trim(),
+    nameEn: (nameEn || '').toString().trim(),
+    meat: (meatZh || '').toString().trim(),   // 「牛／雞／豬／羊／鴨／海鮮／素食」
+    price: (price === '' || price == null) ? null : Number(price),
+    promotion: promo,
+    isPromo: (promo.toString().trim().toLowerCase() === 'yes' || promo === true),
+    promoPrice: (promoPrice === '' || promoPrice == null) ? null : Number(promoPrice)
+  };
+}
 
     async function loadMenu(){
       const t = I18N[currentLang];
