@@ -469,9 +469,9 @@
 
     function formatLine(d){
       const name = (currentLang === 'zh') ? (d.nameZh || d.nameEn) : (d.nameEn || d.nameZh);
-      const alt  = (currentLang === 'zh')
-        ? (d.nameEn ? `（${d.nameEn}）` : '')
-        : (d.nameZh ? `(${d.nameZh})` : '';
+const alt  = (currentLang === 'zh')
+  ? (d.nameEn ? `（${d.nameEn}）` : '')
+  : (d.nameZh ? `(${d.nameZh})` : '');
       const price = (d.price == null || Number.isNaN(d.price)) ? '' : ` - HK$${d.price}`;
       return `• ${name}${alt}${price}`;
     }
@@ -577,9 +577,9 @@
 
       const html = list.map(d => {
         const name = (currentLang === 'zh') ? (d.nameZh || d.nameEn) : (d.nameEn || d.nameZh);
-        const alt  = (currentLang === 'zh')
-          ? (d.nameEn ? `（${d.nameEn}）` : '')
-          : (d.nameZh ? `(${d.nameZh})` : '';
+const alt  = (currentLang === 'zh')
+  ? (d.nameEn ? `（${d.nameEn}）` : '')
+  : (d.nameZh ? `(${d.nameZh})` : '');
         const oriPrice = (d.price == null || Number.isNaN(d.price)) ? '' : `HK$${d.price}`;
         const newPrice = (d.promoPrice == null || Number.isNaN(d.promoPrice)) ? '' : `HK$${d.promoPrice}`;
         let priceText = '';
