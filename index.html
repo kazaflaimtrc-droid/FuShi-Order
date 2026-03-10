@@ -112,7 +112,6 @@
   <div class="chat-container">
     <div class="top-bar">
       <div class="brand">
-        <!-- 無 logo 圖，只保留文字 -->
         <div class="title">
           <strong id="titleText"></strong>
           <span id="subTitleText"></span>
@@ -148,9 +147,7 @@
           <label id="lblMemEmail"></label>
           <input id="memEmail" type="tel" placeholder="例如：64067605">
         </div>
-        <button id="memRegBtn" class="wa-btn" style="margin-bottom:8px;"></button>
         <button id="memCheckBtn" class="wa-btn" style="background:linear-gradient(135deg, var(--gold), #F57C00);"></button>
-        <button id="memAddStampBtn" style="margin-top:8px; width:100%; padding:8px; border-radius:999px; border:1px solid #ccc; background:#fff; color:#555; cursor:pointer; font-size:12px;">🛠️ [店員專用] 加 1 個印花</button>
       </div>
     </div>
 
@@ -161,9 +158,9 @@
   </div>
 
   <script>
-    /************ 你要改：後端 URL & WhatsApp ************/
-    const MENU_API_URL   = 'https://script.google.com/macros/s/AKfycby5S6EXkqphOxGxjX84TP7I1a2L5JJheyl7dnIJOLgvRA73QeVGtJ-LeMP26bWeCUioUg/exec';
-    const MEMBER_API_URL = 'https://script.google.com/macros/s/AKfycbyYga2VZKO4A6k8QSAb_4piT9S-blSt7Kk8KFMeaVUlMFcsPpg1ynNLmK_gG58_JA0E/exec';
+    /************ 後端 URL & WhatsApp ************/
+    const MENU_API_URL   = 'YOUR_MENU_WEBAPP_URL';
+    const MEMBER_API_URL = 'YOUR_MEMBER_WEBAPP_URL';
 
     const WA_PHONE = '85264067605';
     const EMENU_URL = 'https://heyzine.com/flip-book/FuShi福食Menu';
@@ -188,13 +185,11 @@
         rsvIntro: '好呀～請填寫訂位資料，然後用 WhatsApp 傳送俾我哋確認。',
         catIntro: '到會／大量訂購：請先簡單填寫以下資料，我哋會經 WhatsApp 同你跟進；你亦可以先睇到會餐牌同填到會訂購表格。',
         sent: '已開啟 WhatsApp，我哋會盡快回覆你確認。',
-        memberIntro: '想儲印花換優惠？請輸入電話登記成為會員，或者查詢現有印花！（買10次送1次🎁）',
+        memberIntro: '查詢你而家有幾多個印花？輸入電話就可以啦！',
         memEmpty: '請輸入有效嘅電話號碼。',
-        memRegSuccess: '🎉 登記成功！你而家有 0 個印花。下次幫襯記得話俾我哋知你個電話！',
-        memAlreadyExists: '呢個電話已經登記過啦！',
-        memFound: '歡迎返嚟！你目前有 {n} 個印花。',
-        memNotFound: '搵唔到呢個電話嘅記錄，請先登記成為會員。',
-        memReward: '🎊 恭喜！你已經儲齊 10 個印花，可以換領一次免費餐飲優惠啦！請向店員出示此畫面。',
+        memFound: '你目前有 {n} 個印花。',
+        memNotFound: '搵唔到呢個電話嘅記錄。如已幫襯過，請向店員查詢。',
+        memReward: '🎊 你已經儲齊 10 個印花，可以換領一次免費餐飲優惠！請向店員出示此畫面。',
         labels: { 
           pax:'人數', date:'日期', time:'時間', phone:'電話', 
           occ:'用途', qty:'人數／份量', items:'菜式 / Set', 
@@ -203,14 +198,13 @@
         btn: { 
           rsv:'用 WhatsApp 傳送訂位資料', 
           cat:'用 WhatsApp 傳送到會／大量訂購資料', 
-          memReg:'登記會員', 
           memCheck:'查詢印花' 
         },
         hk: [
           { label:'🍴 今日食咩好？', text:'今日食咩好？' },
           { label:'📅 訂位', text:'幫我訂位' },
           { label:'📦 到會', text:'到會／大量訂購' },
-          { label:'🎁 會員印花', text:'會員印花' },
+          { label:'🎁 印花', text:'印花' },
           { label:'🧧 今日優惠', text:'優惠' }
         ],
         langBtn: 'EN'
@@ -230,13 +224,11 @@
         rsvIntro: 'Sure—fill in booking details and send via WhatsApp for confirmation.',
         catIntro: 'Catering / bulk order: please fill in the basic info below, we will follow up via WhatsApp. You can also check the catering menu and submit the online order form.',
         sent: 'WhatsApp opened. We will reply shortly to confirm.',
-        memberIntro: 'Join our loyalty program! Enter your phone number to register or check stamps (Buy 10 get 1 free! 🎁)',
+        memberIntro: 'Check your loyalty stamps! Enter your phone number below.',
         memEmpty: 'Please enter a valid phone number.',
-        memRegSuccess: '🎉 Registration successful! You have 0 stamps. Remember to provide your phone number on your next visit!',
-        memAlreadyExists: 'This phone number is already registered.',
-        memFound: 'Welcome back! You currently have {n} stamps.',
-        memNotFound: 'Record not found for this phone number. Please register first.',
-        memReward: '🎊 Congratulations! You have collected 10 stamps and unlocked a free meal/reward! Please show this screen to our staff.',
+        memFound: 'You currently have {n} stamps.',
+        memNotFound: 'No record found for this phone number. If you have visited us, please ask our staff.',
+        memReward: '🎊 You have collected 10 stamps and unlocked a free reward! Please show this screen to our staff.',
         labels: { 
           pax:'People', date:'Date', time:'Time', phone:'Phone', 
           occ:'Occasion', qty:'Pax / Quantity', items:'Set / Dishes', 
@@ -245,14 +237,13 @@
         btn: { 
           rsv:'Send booking via WhatsApp', 
           cat:'Send catering / bulk order via WhatsApp', 
-          memReg:'Register Member', 
           memCheck:'Check Stamps' 
         },
         hk: [
           { label:'🍴 What to eat?', text:'what to eat' },
           { label:'📅 Booking', text:'book a table' },
           { label:'📦 Catering', text:'catering' },
-          { label:'🎁 Loyalty Stamps', text:'member stamps' },
+          { label:'🎁 Stamps', text:'stamps' },
           { label:'🧧 Today\'s Promo', text:'promotion' }
         ],
         langBtn: '中文'
@@ -287,9 +278,7 @@
     const cateringWaBtn = document.getElementById('cateringWaBtn');
 
     const memEmailInput = document.getElementById('memEmail');
-    const memRegBtn = document.getElementById('memRegBtn');
     const memCheckBtn = document.getElementById('memCheckBtn');
-    const memAddStampBtn = document.getElementById('memAddStampBtn');
 
     /************ state ************/
     let currentLang = getLangFromUrlOrStorage();
@@ -362,10 +351,6 @@
       document.getElementById('lblCatContact').textContent = t.labels.contact;
 
       document.getElementById('lblMemEmail').textContent = t.labels.memEmail;
-
-      rsvWaBtn.textContent = t.btn.rsv;
-      cateringWaBtn.textContent = t.btn.cat;
-      memRegBtn.textContent = t.btn.memReg;
       memCheckBtn.textContent = t.btn.memCheck;
 
       renderHotKeys();
@@ -678,13 +663,12 @@
       return (raw || '').toString().replace(/\D/g, '');
     }
 
-    async function callMemberAPI(action, phone, delta) {
+    async function callMemberAPI(action, phone) {
       if(!MEMBER_API_URL || MEMBER_API_URL.includes('YOUR_MEMBER_WEBAPP_URL')) {
         return { status: 'error', message: 'MEMBER_API_URL 未設定' };
       }
       try {
         const payload = { action: action, phone: phone };
-        if (typeof delta !== 'undefined') payload.delta = delta;
         const res = await fetch(MEMBER_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -696,22 +680,6 @@
         return { status: 'error', message: '網絡異常，請稍後再試。' };
       }
     }
-
-    memRegBtn.addEventListener('click', async () => {
-      let phone = memEmailInput.value.trim();
-      phone = normalizePhoneInput(phone);
-      const t = I18N[currentLang];
-      if (!phone || phone.length < 6) { addBot(t.memEmpty); return; }
-      addBot(currentLang === 'zh' ? '處理中，請稍候...' : 'Processing, please wait...');
-      const response = await callMemberAPI('register', phone);
-      if (response.status === 'success') {
-        addBot(t.memRegSuccess);
-      } else if (response.message === 'already_exists') {
-        addBot(t.memAlreadyExists);
-      } else {
-        addBot('系統發生錯誤：' + response.message);
-      }
-    });
 
     memCheckBtn.addEventListener('click', async () => {
       let phone = memEmailInput.value.trim();
@@ -730,25 +698,6 @@
       }
     });
 
-    memAddStampBtn.addEventListener('click', async () => {
-      const pwd = prompt('請輸入店員密碼 (預設: 102030):');
-      if (pwd !== '102030') {
-        alert('密碼錯誤！');
-        return;
-      }
-      let phone = memEmailInput.value.trim();
-      phone = normalizePhoneInput(phone);
-      if (!phone || phone.length < 6) return alert('請先輸入客人電話');
-      addBot('加印花中...');
-      const response = await callMemberAPI('addStamp', phone, 1);
-      if (response.status === 'success') {
-        alert('成功加咗 1 個印花！目前印花總數：' + response.stamps);
-        memCheckBtn.click();
-      } else {
-        alert('加印花失敗：' + response.message);
-      }
-    });
-
     /************ main router ************/
     function handleKeyword(raw){
       const t = I18N[currentLang];
@@ -758,57 +707,48 @@
       const meatTag = chooseMeatTag(raw);
       const periodKey = choosePeriod(raw);
 
-      // 優惠
       if (s.includes('優惠') || s.includes('promo') || s.includes('promotion') || s.includes('offer')) {
         listPromotions();
         return;
       }
 
-      // 今日食咩 / 推介
       if (s.includes('今日食咩') || s.includes('食咩好') || s.includes('有咩好食') || s.includes('推介') || s.includes('推薦') || s.includes('what to eat') || (s.includes('what') && s.includes('eat'))) {
         flowEat();
         if (meatTag) recommend(meatTag);
         return;
       }
 
-      // 早餐 / 午餐
       if (periodKey) {
         listByPeriod(periodKey);
         return;
       }
 
-      // 訂位
       if (s.includes('訂位') || s.includes('訂枱') || s.includes('book') || s.includes('reservation') || s.includes('reserve')) {
         flowReservation();
         return;
       }
 
-      // 到會
       if (s.includes('到會') || s.includes('大量訂購') || s.includes('catering') || (s.includes('bulk') && s.includes('order'))) {
         flowCatering();
         return;
       }
       
-      // 會員印花
-      if (s.includes('會員') || s.includes('印花') || s.includes('登記') || s.includes('member') || s.includes('stamp') || s.includes('loyalty') || s.includes('register')) {
+      if (s.includes('會員') || s.includes('印花') || s.includes('member') || s.includes('stamp') || s.includes('loyalty')) {
         flowMember();
         return;
       }
 
-      // 外賣
       if (s.includes('外賣') || s.includes('自取') || s.includes('takeaway') || s.includes('pickup') || s.includes('delivery')) {
         addBot(currentLang === 'zh' ? '外賣／自取可以經呢個連結落單：' : 'Order takeaway / pickup here:');
         addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
         return;
       }
 
-      // 只打肉類
       if (meatTag){
         recommend(meatTag);
         return;
       }
 
-      // fallback
       addBot(currentLang === 'zh'
         ? '你可以試吓：今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／訂位／到會／外賣／優惠／會員印花'
         : 'Try: what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / booking / catering / takeaway / promotion / member stamps'
