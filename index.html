@@ -112,7 +112,7 @@
   <div class="chat-container">
     <div class="top-bar">
       <div class="brand">
-        <!-- 已移除 logo 圖片，只保留文字 -->
+        <!-- 無 logo 圖，只保留文字 -->
         <div class="title">
           <strong id="titleText"></strong>
           <span id="subTitleText"></span>
@@ -134,7 +134,7 @@
       </div>
 
       <div id="cateringForm">
-        <div classrow"><label id="lblCatOccasion"></label><input id="catOccasion" type="text"></div>
+        <div class="row"><label id="lblCatOccasion"></label><input id="catOccasion" type="text"></div>
         <div class="row"><label id="lblCatPax"></label><input id="catPax" type="text"></div>
         <div class="row"><label id="lblCatDate"></label><input id="catDate" type="date"></div>
         <div class="row"><label id="lblCatTime"></label><input id="catTime" type="time"></div>
@@ -146,10 +146,8 @@
       <div id="memberForm">
         <div class="row">
           <label id="lblMemEmail"></label>
-          <!-- 改為電話號碼輸入 -->
           <input id="memEmail" type="tel" placeholder="例如：64067605">
         </div>
-        <!-- 只保留「查詢印花」給客人用；如你仍想要註冊，可保留 memRegBtn -->
         <button id="memRegBtn" class="wa-btn" style="margin-bottom:8px;"></button>
         <button id="memCheckBtn" class="wa-btn" style="background:linear-gradient(135deg, var(--gold), #F57C00);"></button>
         <button id="memAddStampBtn" style="margin-top:8px; width:100%; padding:8px; border-radius:999px; border:1px solid #ccc; background:#fff; color:#555; cursor:pointer; font-size:12px;">🛠️ [店員專用] 加 1 個印花</button>
@@ -164,8 +162,8 @@
 
   <script>
     /************ 你要改：後端 URL & WhatsApp ************/
-    const MENU_API_URL = 'https://script.google.com/macros/s/AKfycby5S6EXkqphOxGxjX84TP7I1a2L5JJheyl7dnIJOLgvRA73QeVGtJ-LeMP26bWeCUioUg/exec';
-    const MEMBER_API_URL = 'https://script.google.com/macros/s/AKfycbyYga2VZKO4A6k8QSAb_4piT9S-blSt7Kk8KFMeaVUlMFcsPpg1ynNLmK_gG58_JA0E/exec'; 
+    const MENU_API_URL   = 'YOUR_MENU_WEBAPP_URL';
+    const MEMBER_API_URL = 'YOUR_MEMBER_WEBAPP_URL';
 
     const WA_PHONE = '85264067605';
     const EMENU_URL = 'https://heyzine.com/flip-book/FuShi福食Menu';
@@ -190,7 +188,6 @@
         rsvIntro: '好呀～請填寫訂位資料，然後用 WhatsApp 傳送俾我哋確認。',
         catIntro: '到會／大量訂購：請先簡單填寫以下資料，我哋會經 WhatsApp 同你跟進；你亦可以先睇到會餐牌同填到會訂購表格。',
         sent: '已開啟 WhatsApp，我哋會盡快回覆你確認。',
-        // 會員改用電話
         memberIntro: '想儲印花換優惠？請輸入電話登記成為會員，或者查詢現有印花！（買10次送1次🎁）',
         memEmpty: '請輸入有效嘅電話號碼。',
         memRegSuccess: '🎉 登記成功！你而家有 0 個印花。下次幫襯記得話俾我哋知你個電話！',
@@ -199,15 +196,9 @@
         memNotFound: '搵唔到呢個電話嘅記錄，請先登記成為會員。',
         memReward: '🎊 恭喜！你已經儲齊 10 個印花，可以換領一次免費餐飲優惠啦！請向店員出示此畫面。',
         labels: { 
-          pax:'人數', 
-          date:'日期', 
-          time:'時間', 
-          phone:'電話', 
-          occ:'用途', 
-          qty:'人數／份量', 
-          items:'菜式 / Set', 
-          contact:'聯絡', 
-          memEmail:'電話' 
+          pax:'人數', date:'日期', time:'時間', phone:'電話', 
+          occ:'用途', qty:'人數／份量', items:'菜式 / Set', 
+          contact:'聯絡', memEmail:'電話' 
         },
         btn: { 
           rsv:'用 WhatsApp 傳送訂位資料', 
@@ -215,14 +206,13 @@
           memReg:'登記會員', 
           memCheck:'查詢印花' 
         },
-        // 只保留檢查優惠的快捷鍵
-hk: [
-  { label:'🍴 今日食咩好？', text:'今日食咩好？' },
-  { label:'📅 訂位', text:'幫我訂位' },
-  { label:'📦 到會', text:'到會／大量訂購' },
-  { label:'🎁 會員印花', text:'會員印花' },
-  { label:'🧧 今日優惠', text:'優惠' }
-],
+        hk: [
+          { label:'🍴 今日食咩好？', text:'今日食咩好？' },
+          { label:'📅 訂位', text:'幫我訂位' },
+          { label:'📦 到會', text:'到會／大量訂購' },
+          { label:'🎁 會員印花', text:'會員印花' },
+          { label:'🧧 今日優惠', text:'優惠' }
+        ],
         langBtn: 'EN'
       },
       en: {
@@ -230,7 +220,7 @@ hk: [
         sub: 'Booking · Catering · Takeaway',
         placeholder: 'Type your question: booking, catering, promo, stamps…',
         btnSend: 'Send',
-        welcome: ['Hi! Welcome to "FuShi".', 'Use the hot key below or type your question.'],
+        welcome: ['Hi! Welcome to "FuShi".', 'Use the hot keys below or type your question.'],
         askMeat: 'Any preference today? Beef / Chicken / Pork / Seafood / Vegan / Lamb / Duck.',
         menuFail: 'Unable to load live menu. You can open the e-menu:',
         picked: 'Here are some picks:',
@@ -248,15 +238,9 @@ hk: [
         memNotFound: 'Record not found for this phone number. Please register first.',
         memReward: '🎊 Congratulations! You have collected 10 stamps and unlocked a free meal/reward! Please show this screen to our staff.',
         labels: { 
-          pax:'People', 
-          date:'Date', 
-          time:'Time', 
-          phone:'Phone', 
-          occ:'Occasion', 
-          qty:'Pax / Quantity', 
-          items:'Set / Dishes', 
-          contact:'Contact', 
-          memEmail:'Phone' 
+          pax:'People', date:'Date', time:'Time', phone:'Phone', 
+          occ:'Occasion', qty:'Pax / Quantity', items:'Set / Dishes', 
+          contact:'Contact', memEmail:'Phone' 
         },
         btn: { 
           rsv:'Send booking via WhatsApp', 
@@ -264,13 +248,13 @@ hk: [
           memReg:'Register Member', 
           memCheck:'Check Stamps' 
         },
-hk: [
-  { label:'🍴 What to eat?', text:'what to eat' },
-  { label:'📅 Booking', text:'book a table' },
-  { label:'📦 Catering', text:'catering' },
-  { label:'🎁 Loyalty Stamps', text:'member stamps' },
-  { label:'🧧 Today\'s Promo', text:'promotion' }
-],
+        hk: [
+          { label:'🍴 What to eat?', text:'what to eat' },
+          { label:'📅 Booking', text:'book a table' },
+          { label:'📦 Catering', text:'catering' },
+          { label:'🎁 Loyalty Stamps', text:'member stamps' },
+          { label:'🧧 Today\'s Promo', text:'promotion' }
+        ],
         langBtn: '中文'
       }
     };
@@ -338,7 +322,7 @@ hk: [
     function getMealPeriodByTime() {
       const hour = new Date().getHours();
       if (hour < 11) return 'breakfast';
-      return 'lunch';   // 只保留早餐 / 午餐
+      return 'lunch';
     }
 
     /************ language ************/
@@ -477,9 +461,9 @@ hk: [
 
     function formatLine(d){
       const name = (currentLang === 'zh') ? (d.nameZh || d.nameEn) : (d.nameEn || d.nameZh);
-const alt  = (currentLang === 'zh')
-  ? (d.nameEn ? `（${d.nameEn}）` : '')
-  : (d.nameZh ? `(${d.nameZh})` : '');
+      const alt  = (currentLang === 'zh')
+        ? (d.nameEn ? `（${d.nameEn}）` : '')
+        : (d.nameZh ? `(${d.nameZh})` : '');
       const price = (d.price == null || Number.isNaN(d.price)) ? '' : ` - HK$${d.price}`;
       return `• ${name}${alt}${price}`;
     }
@@ -585,9 +569,9 @@ const alt  = (currentLang === 'zh')
 
       const html = list.map(d => {
         const name = (currentLang === 'zh') ? (d.nameZh || d.nameEn) : (d.nameEn || d.nameZh);
-const alt  = (currentLang === 'zh')
-  ? (d.nameEn ? `（${d.nameEn}）` : '')
-  : (d.nameZh ? `(${d.nameZh})` : '');
+        const alt  = (currentLang === 'zh')
+          ? (d.nameEn ? `（${d.nameEn}）` : '')
+          : (d.nameZh ? `(${d.nameZh})` : '');
         const oriPrice = (d.price == null || Number.isNaN(d.price)) ? '' : `HK$${d.price}`;
         const newPrice = (d.promoPrice == null || Number.isNaN(d.promoPrice)) ? '' : `HK$${d.promoPrice}`;
         let priceText = '';
@@ -689,14 +673,14 @@ const alt  = (currentLang === 'zh')
       addBot(I18N[currentLang].sent);
     }
 
-    /************ Member API（改用 phone） ************/
+    /************ Member API（phone） ************/
     function normalizePhoneInput(raw) {
       return (raw || '').toString().replace(/\D/g, '');
     }
 
     async function callMemberAPI(action, phone, delta) {
-      if(!MEMBER_API_URL || MEMBER_API_URL.includes('你的部署ID')) {
-        return { status: 'error', message: '尚未設定 MEMBER_API_URL' };
+      if(!MEMBER_API_URL || MEMBER_API_URL.includes('YOUR_MEMBER_WEBAPP_URL')) {
+        return { status: 'error', message: 'MEMBER_API_URL 未設定' };
       }
       try {
         const payload = { action: action, phone: phone };
@@ -774,60 +758,60 @@ const alt  = (currentLang === 'zh')
       const meatTag = chooseMeatTag(raw);
       const periodKey = choosePeriod(raw);
 
-      // 1. 優惠相關字眼 -> 列出 Promotion
+      // 優惠
       if (s.includes('優惠') || s.includes('promo') || s.includes('promotion') || s.includes('offer')) {
         listPromotions();
         return;
       }
 
-      // 2. 今日食咩 / 推介
+      // 今日食咩 / 推介
       if (s.includes('今日食咩') || s.includes('食咩好') || s.includes('有咩好食') || s.includes('推介') || s.includes('推薦') || s.includes('what to eat') || (s.includes('what') && s.includes('eat'))) {
         flowEat();
         if (meatTag) recommend(meatTag);
         return;
       }
 
-      // 3. 早餐 / 午餐
+      // 早餐 / 午餐
       if (periodKey) {
         listByPeriod(periodKey);
         return;
       }
 
-      // 4. 訂位
+      // 訂位
       if (s.includes('訂位') || s.includes('訂枱') || s.includes('book') || s.includes('reservation') || s.includes('reserve')) {
         flowReservation();
         return;
       }
 
-      // 5. 到會
+      // 到會
       if (s.includes('到會') || s.includes('大量訂購') || s.includes('catering') || (s.includes('bulk') && s.includes('order'))) {
         flowCatering();
         return;
       }
       
-      // 6. 會員印花
+      // 會員印花
       if (s.includes('會員') || s.includes('印花') || s.includes('登記') || s.includes('member') || s.includes('stamp') || s.includes('loyalty') || s.includes('register')) {
         flowMember();
         return;
       }
 
-      // 7. 外賣
+      // 外賣
       if (s.includes('外賣') || s.includes('自取') || s.includes('takeaway') || s.includes('pickup') || s.includes('delivery')) {
         addBot(currentLang === 'zh' ? '外賣／自取可以經呢個連結落單：' : 'Order takeaway / pickup here:');
         addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
         return;
       }
 
-      // 8. 單純打咗牛/雞/豬等肉類
+      // 只打肉類
       if (meatTag){
         recommend(meatTag);
         return;
       }
 
-      // 9. 乜都唔中嘅提示
+      // fallback
       addBot(currentLang === 'zh'
-        ? '你可以試吓：優惠／今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／訂位／到會／外賣／會員印花'
-        : 'Try: promotion / what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / booking / catering / takeaway / member stamps'
+        ? '你可以試吓：今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／訂位／到會／外賣／優惠／會員印花'
+        : 'Try: what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / booking / catering / takeaway / promotion / member stamps'
       );
     }
 
