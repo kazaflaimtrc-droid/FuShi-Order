@@ -13,6 +13,8 @@
       --ink:#1f2d1f;
       --card:rgba(255,255,255,.92);
       --line:rgba(46,125,50,.18);
+      --blue:#3949AB;
+      --blue2:#5C6BC0;
     }
     *{box-sizing:border-box}
     body{
@@ -71,7 +73,7 @@
     }
     .hot-key-btn:hover{background:rgba(46,125,50,.14); transform:translateY(-1px);}
     .forms{display:flex; flex-direction:column; gap:10px;}
-    #reservationForm, #cateringForm, #memberForm {
+    #reservationForm, #cateringForm, #memberForm, #feedbackForm {
       display:none; border:1px solid var(--line); border-radius:16px; padding:12px;
       background:rgba(46,125,50,.04);
     }
@@ -81,12 +83,17 @@
       width:100%; font-size:13px; padding:8px 10px; border-radius:10px;
       border:1px solid rgba(0,0,0,.15); background:rgba(255,255,255,.9); outline:none;
     }
-    .row textarea{min-height:56px; resize:vertical;}
+    .row textarea{min-height:72px; resize:vertical;}
     .wa-btn{
       width:100%; border:none; border-radius:999px; padding:10px 12px; cursor:pointer;
       font-weight:800; color:#fff; background:linear-gradient(135deg, #25D366, #128C7E); transition:.15s;
     }
     .wa-btn:hover{transform:translateY(-1px);}
+    .feedback-btn{
+      width:100%; border:none; border-radius:999px; padding:10px 12px; cursor:pointer;
+      font-weight:800; color:#fff; background:linear-gradient(135deg, var(--blue2), var(--blue)); transition:.15s;
+    }
+    .feedback-btn:hover{transform:translateY(-1px);}
     .input-area{display:flex; gap:8px; border-top:1px solid var(--line); padding-top:10px;}
     .input-area input{
       flex:1; border:1px solid rgba(46,125,50,.25); border-radius:999px; padding:11px 12px;
@@ -144,10 +151,18 @@
       
       <div id="memberForm">
         <div class="row">
-          <label id="lblMemEmail"></label>
-          <input id="memEmail" type="tel" placeholder="例如：91234567">
+          <label id="lblMemPhone"></label>
+          <input id="memPhone" type="tel" placeholder="例如：64067605">
         </div>
         <button id="memCheckBtn" class="wa-btn" style="background:linear-gradient(135deg, var(--gold), #F57C00);"></button>
+      </div>
+
+      <div id="feedbackForm">
+        <div class="row">
+          <label id="lblFeedback"></label>
+          <textarea id="feedbackText" placeholder="請輸入你的意見或建議"></textarea>
+        </div>
+        <button id="feedbackBtn" class="feedback-btn"></button>
       </div>
     </div>
 
@@ -158,9 +173,9 @@
   </div>
 
   <script>
-    /************ 後端 URL & WhatsApp ************/
     const MENU_API_URL   = 'https://script.google.com/macros/s/AKfycby5S6EXkqphOxGxjX84TP7I1a2L5JJheyl7dnIJOLgvRA73QeVGtJ-LeMP26bWeCUioUg/exec';
     const MEMBER_API_URL = 'https://script.google.com/macros/s/AKfycbyYga2VZKO4A6k8QSAb_4piT9S-blSt7Kk8KFMeaVUlMFcsPpg1ynNLmK_gG58_JA0E/exec';
+    const FEEDBACK_API_URL = 'https://script.google.com/macros/s/AKfycbyZztUx5orj3d2BiVfXt-LyQxp3sBUoci2xpZ3xycEkcWpfp-0R5GN7gHXLI2kh4edr/exec';
 
     const WA_PHONE = '85264067605';
     const EMENU_URL = 'https://heyzine.com/flip-book/FuShi福食Menu';
@@ -168,7 +183,6 @@
     const CATERING_MENU_URL = 'https://heyzine.com/flip-book/FuShi%E7%A6%8F%E9%A3%9FCateringMenu%E5%88%B0%E6%9C%83%E9%A4%90%E7%89%8C#page/1';
     const CATERING_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeBUXo26xLgbTr9kl_153XZ54_lCc8F3uL1uaH2J6Of_NRLMw/viewform';
 
-    /************ i18n ************/
     const I18N = {
       zh: {
         title: '福食小幫手',
@@ -189,30 +203,36 @@
         memEmpty: '請輸入有效嘅電話號碼。',
         memFound: '你目前有 {n} 個印花。',
         memNotFound: '搵唔到呢個電話嘅記錄。如已幫襯過，請向店員查詢。',
-        memReward: '🎊 你已經儲齊 10 個印花，可以換領優惠啦！快啲向店員查詢啦。',
-        labels: { 
-          pax:'人數', date:'日期', time:'時間', phone:'電話', 
-          occ:'用途', qty:'人數／份量', items:'菜式 / Set', 
-          contact:'聯絡', memEmail:'電話' 
+        memReward: '🎊 你已經儲齊 10 個印花，有咩可以換? 問下店員啦。',
+        feedbackIntro: '歡迎匿名留下意見或建議，我哋會認真參考。',
+        feedbackEmpty: '請先輸入你的意見或建議。',
+        feedbackSuccess: '多謝你嘅意見！我哋已經收到。',
+        feedbackFail: '提交失敗，請稍後再試。',
+        labels: {
+          pax:'人數', date:'日期', time:'時間', phone:'電話',
+          occ:'用途', qty:'人數／份量', items:'菜式 / Set',
+          contact:'聯絡', memPhone:'電話', feedback:'意見'
         },
-        btn: { 
-          rsv:'用 WhatsApp 傳送訂位資料', 
-          cat:'用 WhatsApp 傳送到會／大量訂購資料', 
-          memCheck:'查詢印花' 
+        btn: {
+          rsv:'用 WhatsApp 傳送訂位資料',
+          cat:'用 WhatsApp 傳送到會／大量訂購資料',
+          memCheck:'查詢印花',
+          feedback:'提交意見'
         },
         hk: [
           { label:'🍴 今日食咩好？', text:'今日食咩好？' },
           { label:'📅 訂位', text:'幫我訂位' },
           { label:'📦 到會', text:'到會／大量訂購' },
-          { label:'🎁 印花', text:'印花' },
-          { label:'🧧 今日優惠', text:'優惠' }
+          { label:'🎁 會員印花', text:'會員印花' },
+          { label:'🧧 今日優惠', text:'優惠' },
+          { label:'💬 意見建議', text:'意見建議' }
         ],
         langBtn: 'EN'
       },
       en: {
         title: 'FuShi Food Assistant',
         sub: 'Booking · Catering · Takeaway',
-        placeholder: 'Type your question: booking, catering, promo, stamps…',
+        placeholder: 'Type your question: booking, catering, promo, stamps, feedback…',
         btnSend: 'Send',
         welcome: ['Hi! Welcome to "FuShi".', 'Use the hot keys below or type your question.'],
         askMeat: 'Any preference today? Beef / Chicken / Pork / Seafood / Vegan / Lamb / Duck.',
@@ -229,28 +249,33 @@
         memFound: 'You currently have {n} stamps.',
         memNotFound: 'No record found for this phone number. If you have visited us, please ask our staff.',
         memReward: '🎊 You have collected 10 stamps and unlocked a free reward! Please check with our staff.',
-        labels: { 
-          pax:'People', date:'Date', time:'Time', phone:'Phone', 
-          occ:'Occasion', qty:'Pax / Quantity', items:'Set / Dishes', 
-          contact:'Contact', memEmail:'Phone' 
+        feedbackIntro: 'You can leave anonymous comments or suggestions here.',
+        feedbackEmpty: 'Please enter your feedback first.',
+        feedbackSuccess: 'Thank you! Your feedback has been received.',
+        feedbackFail: 'Submission failed. Please try again later.',
+        labels: {
+          pax:'People', date:'Date', time:'Time', phone:'Phone',
+          occ:'Occasion', qty:'Pax / Quantity', items:'Set / Dishes',
+          contact:'Contact', memPhone:'Phone', feedback:'Feedback'
         },
-        btn: { 
-          rsv:'Send booking via WhatsApp', 
-          cat:'Send catering / bulk order via WhatsApp', 
-          memCheck:'Check Stamps' 
+        btn: {
+          rsv:'Send booking via WhatsApp',
+          cat:'Send catering / bulk order via WhatsApp',
+          memCheck:'Check Stamps',
+          feedback:'Submit Feedback'
         },
         hk: [
           { label:'🍴 What to eat?', text:'what to eat' },
           { label:'📅 Booking', text:'book a table' },
           { label:'📦 Catering', text:'catering' },
-          { label:'🎁 Stamps', text:'stamps' },
-          { label:'🧧 Today\'s Promo', text:'promotion' }
+          { label:'🎁 Loyalty Stamps', text:'member stamps' },
+          { label:'🧧 Today\'s Promo', text:'promotion' },
+          { label:'💬 Feedback', text:'feedback' }
         ],
         langBtn: '中文'
       }
     };
 
-    /************ DOM ************/
     const chat = document.getElementById('chat');
     const input = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -262,6 +287,7 @@
     const rsvForm = document.getElementById('reservationForm');
     const cateringForm = document.getElementById('cateringForm');
     const memberForm = document.getElementById('memberForm');
+    const feedbackForm = document.getElementById('feedbackForm');
 
     const rsvPaxInput = document.getElementById('rsvPax');
     const rsvDateInput = document.getElementById('rsvDate');
@@ -277,14 +303,15 @@
     const catContactInput = document.getElementById('catContact');
     const cateringWaBtn = document.getElementById('cateringWaBtn');
 
-    const memEmailInput = document.getElementById('memEmail');
+    const memPhoneInput = document.getElementById('memPhone');
     const memCheckBtn = document.getElementById('memCheckBtn');
 
-    /************ state ************/
+    const feedbackText = document.getElementById('feedbackText');
+    const feedbackBtn = document.getElementById('feedbackBtn');
+
     let currentLang = getLangFromUrlOrStorage();
     let menuData = [];
 
-    /************ helpers ************/
     function addBot(text){
       const div = document.createElement('div');
       div.className = 'msg bot';
@@ -308,13 +335,19 @@
     }
     function norm(s){ return (s || '').toString().toLowerCase().trim(); }
 
+    function hideAllForms(){
+      rsvForm.style.display = 'none';
+      cateringForm.style.display = 'none';
+      memberForm.style.display = 'none';
+      feedbackForm.style.display = 'none';
+    }
+
     function getMealPeriodByTime() {
       const hour = new Date().getHours();
       if (hour < 11) return 'breakfast';
       return 'lunch';
     }
 
-    /************ language ************/
     function getLangFromUrlOrStorage(){
       const p = new URLSearchParams(location.search);
       const urlLang = (p.get('lang') || '').toLowerCase();
@@ -350,8 +383,13 @@
       document.getElementById('lblCatItems').textContent = t.labels.items;
       document.getElementById('lblCatContact').textContent = t.labels.contact;
 
-      document.getElementById('lblMemEmail').textContent = t.labels.memEmail;
+      document.getElementById('lblMemPhone').textContent = t.labels.memPhone;
+      document.getElementById('lblFeedback').textContent = t.labels.feedback;
+
+      rsvWaBtn.textContent = t.btn.rsv;
+      cateringWaBtn.textContent = t.btn.cat;
       memCheckBtn.textContent = t.btn.memCheck;
+      feedbackBtn.textContent = t.btn.feedback;
 
       renderHotKeys();
     }
@@ -371,13 +409,10 @@
     function welcome(){
       const t = I18N[currentLang];
       chat.innerHTML = '';
-      rsvForm.style.display = 'none';
-      cateringForm.style.display = 'none';
-      memberForm.style.display = 'none';
+      hideAllForms();
       t.welcome.forEach(addBot);
     }
 
-    /************ menu normalize ************/
     function normalizeRow(row){
       const period = row.period || row['Available Period'] || 'All Day';
       const nameZh = row.item_zh || row['Item in Chinese'] || row.item || '';
@@ -420,7 +455,6 @@
       }
     }
 
-    /************ recommendation / period / promo helpers ************/
     function chooseMeatTag(raw){
       const s = norm(raw);
       if (s.includes('牛') || s.includes('beef')) return '牛';
@@ -435,12 +469,8 @@
 
     function choosePeriod(raw) {
       const s = norm(raw);
-      if (s.includes('早') || s.includes('早餐') || s.includes('breakfast') || s.includes('morning')) {
-        return 'breakfast';
-      }
-      if (s.includes('午') || s.includes('lunch') || s.includes('茶') || s.includes('下午茶') || s.includes('tea')) {
-        return 'lunch';
-      }
+      if (s.includes('早') || s.includes('早餐') || s.includes('breakfast') || s.includes('morning')) return 'breakfast';
+      if (s.includes('午') || s.includes('lunch') || s.includes('茶') || s.includes('下午茶') || s.includes('tea')) return 'lunch';
       return null;
     }
 
@@ -463,17 +493,12 @@
       }
 
       const currentPeriod = getMealPeriodByTime();
-
       const list = menuData.filter(d => {
         const isMatchMeat = norm(d.meat) === norm(meatTag);
         const itemPeriod = norm(d.period);
-        const isMatchPeriod = !itemPeriod || 
-                              itemPeriod.includes('all') || 
-                              itemPeriod.includes('drink') || 
-                              itemPeriod.includes('snack') || 
-                              itemPeriod === currentPeriod;
+        const isMatchPeriod = !itemPeriod || itemPeriod.includes('all') || itemPeriod.includes('drink') || itemPeriod.includes('snack') || itemPeriod === currentPeriod;
         return isMatchMeat && isMatchPeriod;
-      }).slice(0, 3); 
+      }).slice(0, 3);
 
       if(!list.length){
         addBot(t.noMatch);
@@ -501,11 +526,7 @@
       const list = menuData.filter(d => norm(d.period) === norm(periodKey));
 
       if (!list.length) {
-        if (currentLang === 'zh') {
-          addBot('暫時喺系統入面搵唔到呢個時段嘅菜式。');
-        } else {
-          addBot('No dishes found for this time period.');
-        }
+        addBot(currentLang === 'zh' ? '暫時喺系統入面搵唔到呢個時段嘅菜式。' : 'No dishes found for this time period.');
         addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
         return;
       }
@@ -518,8 +539,7 @@
         else if (periodKey === 'lunch') addBot('Here are all lunch items:');
       }
 
-      const html = list.map(formatLine).join('<br>');
-      addBotHTML(html);
+      addBotHTML(list.map(formatLine).join('<br>'));
       addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
       addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
     }
@@ -537,20 +557,14 @@
       const list = menuData.filter(d => d.isPromo);
 
       if (!list.length) {
-        if (currentLang === 'zh') {
-          addBot('暫時未有特別優惠，你可以開電子餐牌睇下其他菜式：');
-        } else {
-          addBot('There are no special promotions at the moment. You can check the e-menu for other dishes:');
-        }
+        addBot(currentLang === 'zh'
+          ? '暫時未有特別優惠，你可以開電子餐牌睇下其他菜式：'
+          : 'There are no special promotions at the moment. You can check the e-menu for other dishes:');
         addBotHTML(`👉 <a href="${EMENU_URL}" target="_blank">${t.menuLink}</a>`);
         return;
       }
 
-      if (currentLang === 'zh') {
-        addBot('✨ 而家做緊以下精選優惠：');
-      } else {
-        addBot('✨ Here are our current special promotions:');
-      }
+      addBot(currentLang === 'zh' ? '✨ 而家做緊以下精選優惠：' : '✨ Here are our current special promotions:');
 
       const html = list.map(d => {
         const name = (currentLang === 'zh') ? (d.nameZh || d.nameEn) : (d.nameEn || d.nameZh);
@@ -560,7 +574,7 @@
         const oriPrice = (d.price == null || Number.isNaN(d.price)) ? '' : `HK$${d.price}`;
         const newPrice = (d.promoPrice == null || Number.isNaN(d.promoPrice)) ? '' : `HK$${d.promoPrice}`;
         let priceText = '';
-        if(oriPrice && newPrice) {
+        if (oriPrice && newPrice) {
           priceText = ` - <del style="color:#888;">${oriPrice}</del> <strong><span style="color:#d32f2f;">${newPrice}</span></strong>`;
         } else if (newPrice) {
           priceText = ` - <strong><span style="color:#d32f2f;">${newPrice}</span></strong>`;
@@ -574,43 +588,28 @@
       addBotHTML(`👉 <a href="${ORDER_URL}" target="_blank">${t.orderLink}</a>`);
     }
 
-    /************ flows ************/
     function flowEat(){
-      rsvForm.style.display='none';
-      cateringForm.style.display='none';
-      memberForm.style.display='none';
-
+      hideAllForms();
       const period = getMealPeriodByTime();
       const t = I18N[currentLang];
 
       if (currentLang === 'zh') {
-        if (period === 'breakfast') {
-          addBot('而家仲係早餐時段，我可以幫你揀返啲早餐款式～');
-        } else {
-          addBot('而家係午餐時段，我幫你揀啲 lunch 菜式～');
-        }
+        addBot(period === 'breakfast' ? '而家仲係早餐時段，我可以幫你揀返啲早餐款式～' : '而家係午餐時段，我幫你揀啲 lunch 菜式～');
       } else {
-        if (period === 'breakfast') {
-          addBot('It is breakfast time, let me suggest some breakfast items.');
-        } else {
-          addBot('It is lunch time, I will suggest some lunch dishes.');
-        }
+        addBot(period === 'breakfast' ? 'It is breakfast time, let me suggest some breakfast items.' : 'It is lunch time, I will suggest some lunch dishes.');
       }
       addBot(t.askMeat);
     }
 
     function flowReservation(){
-      cateringForm.style.display='none';
-      memberForm.style.display='none';
+      hideAllForms();
       rsvForm.style.display='block';
       addBot(I18N[currentLang].rsvIntro);
     }
 
     function flowCatering(){
-      rsvForm.style.display='none';
-      memberForm.style.display='none';
+      hideAllForms();
       cateringForm.style.display='block';
-
       const t = I18N[currentLang];
       addBot(t.catIntro);
 
@@ -624,10 +623,15 @@
     }
 
     function flowMember(){
-      rsvForm.style.display='none';
-      cateringForm.style.display='none';
+      hideAllForms();
       memberForm.style.display='block';
       addBot(I18N[currentLang].memberIntro);
+    }
+
+    function flowFeedback(){
+      hideAllForms();
+      feedbackForm.style.display='block';
+      addBot(I18N[currentLang].feedbackIntro);
     }
 
     function openWhatsAppReservation(){
@@ -658,7 +662,6 @@
       addBot(I18N[currentLang].sent);
     }
 
-    /************ Member API（phone） ************/
     function normalizePhoneInput(raw) {
       return (raw || '').toString().replace(/\D/g, '');
     }
@@ -668,22 +671,59 @@
         return { status: 'error', message: 'MEMBER_API_URL 未設定' };
       }
       try {
-        const payload = { action: action, phone: phone };
         const res = await fetch(MEMBER_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ action, phone })
         });
         return await res.json();
       } catch (e) {
-        console.error('API Error:', e);
+        console.error(e);
         return { status: 'error', message: '網絡異常，請稍後再試。' };
       }
     }
 
+    async function submitFeedback(){
+      const t = I18N[currentLang];
+      const message = (feedbackText.value || '').trim();
+
+      if (!message) {
+        addBot(t.feedbackEmpty);
+        return;
+      }
+
+      if(!FEEDBACK_API_URL || FEEDBACK_API_URL.includes('YOUR_FEEDBACK_WEBAPP_URL')) {
+        addBot(t.feedbackFail + '：FEEDBACK_API_URL 未設定');
+        return;
+      }
+
+      try {
+        const res = await fetch(FEEDBACK_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            message,
+            lang: currentLang,
+            source: 'fushi-website'
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          addBot(t.feedbackSuccess);
+          feedbackText.value = '';
+        } else {
+          addBot(t.feedbackFail + '：' + (data.message || 'unknown'));
+        }
+      } catch (e) {
+        console.error(e);
+        addBot(t.feedbackFail);
+      }
+    }
+
     memCheckBtn.addEventListener('click', async () => {
-      let phone = memEmailInput.value.trim();
-      phone = normalizePhoneInput(phone);
+      let phone = normalizePhoneInput(memPhoneInput.value.trim());
       const t = I18N[currentLang];
       if (!phone || phone.length < 6) { addBot(t.memEmpty); return; }
       addBot(currentLang === 'zh' ? '查詢中，請稍候...' : 'Checking, please wait...');
@@ -698,7 +738,11 @@
       }
     });
 
-    /************ main router ************/
+    feedbackBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      submitFeedback();
+    });
+
     function handleKeyword(raw){
       const t = I18N[currentLang];
       const s = norm(raw);
@@ -709,6 +753,11 @@
 
       if (s.includes('優惠') || s.includes('promo') || s.includes('promotion') || s.includes('offer')) {
         listPromotions();
+        return;
+      }
+
+      if (s.includes('意見') || s.includes('建議') || s.includes('feedback') || s.includes('comment') || s.includes('suggestion')) {
+        flowFeedback();
         return;
       }
 
@@ -750,12 +799,11 @@
       }
 
       addBot(currentLang === 'zh'
-        ? '你可以試吓：今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／訂位／到會／外賣／優惠／會員印花'
-        : 'Try: what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / booking / catering / takeaway / promotion / member stamps'
+        ? '你可以試吓：今日食咩好？／牛／雞／豬／羊／鴨／海鮮／素食／訂位／到會／外賣／優惠／會員印花／意見建議'
+        : 'Try: what to eat / beef / chicken / pork / lamb / duck / seafood / vegan / booking / catering / takeaway / promotion / member stamps / feedback'
       );
     }
 
-    /************ events ************/
     hotKeysEl.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-text]');
       if (!btn) return;
@@ -791,7 +839,6 @@
       openWhatsAppCatering();
     });
 
-    /************ init ************/
     (async function init(){
       applyLanguageUI();
       welcome();
